@@ -1,0 +1,200 @@
+\documentclass{article}[12pt]
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{booktabs}
+\usepackage[bottom=1.0in, top=1.0in, left=1in, right=1in]{geometry}
+
+\lstset {
+    language=C,
+    basicstyle=\footnotesize,
+    numbers=left,
+    stepnumber=1,
+    showstringspaces=false,
+    tabsize=1,
+    breaklines=true,
+    breakatwhitespace=false,
+}
+
+
+\title{COMS W4115 Fall 2020: Homework Assignment 3}
+
+\author{Programming Languages and Translators}
+\date{\textbf{Deadline:} Wednesday, November 25, 2020 by 11:59 PM}
+
+\begin{document}
+
+\maketitle
+
+\section*{Overview}
+
+This homework assignment will test your knowledge of semantic analysis, runtime environments, control flow analysis, and stack machines, all of which you have learned in class. Please submit your assignment via Gradescope by the deadline. This is an \textit{individual} assignment, and all answers must be \textit{typed}. However, you are allowed to hand-draw any control flow graphs/activation trees and scan and attach them in your final submission. Finally, you must adhere to the academic integrity policies of the course.\\\\\textbf{Total Points:} 85\\\textbf{Number of Problems:} 4
+
+\section*{Problems}
+
+\begin{enumerate}
+
+\begin{lstlisting}
+#include <stdio.h>
+
+int x = 3, r = 5;
+
+int foo(float r) {
+    	return x + 2 * r;
+}
+
+int bar(float l, float m) {
+    	return m - l - x;
+}
+
+int pltIsAwesome(int something) {
+	    int a = 2, b = 1, c = 3, x;
+    	for(x = 0; x < 2; x++) {
+        		b -= foo(x);
+        		float something = 2.5;
+        		if(x < 1) {
+            			float x = 2, r = x + 10;
+            			something--;
+        		}
+        		else {
+            			int x = 3;
+            			b += 1;
+        		}
+        		something -= r;
+        		int r = 2;
+        		a += bar(foo(something), x - r);
+    	}
+    	b += 2;
+    	return a * b - x - something;
+}
+
+int main() {
+    	printf("%d\n", foo(pltIsAwesome(5)));
+    	return 0;
+}
+\end{lstlisting}
+
+    \item \textbf{(35 Points)} In Programming Assignment 3, you worked with scope-based semantic analysis to identify redefined variables. One way to accomplish this task is to use \textit{symbol tables} to store information about variable definitions and the scopes that house them. Used by the compiler, symbol tables are map-like data structures that contain important information about variables, functions, and classes, allowing for powerful operations such as scope resolution and type checking of code. You will now have another opportunity to work with symbol tables in this problem.
+    
+    Suppose you are given the C code snippet on the previous page.
+    
+    \begin{enumerate}
+        \item \textbf{(2 Points)} Identify the different scopes of function \texttt{pltIsAwesome} in the code snippet. Label scopes in the following form: ``Scope \textit{X}: [\textit{Beginning Line Number}, \textit{Ending Line Number}].'' \textit{X} is a numerical value (starting from 1) that labels your scope, \textit{Beginning Line Number} is the line number of the first line in the scope, and \textit{Ending Line Number} is the line number of the last line in the scope. For example, if the second scope you identified is defined from line 2 to line 4, inclusive, then you should include ``Scope 2: [2, 4]'' in your response. Assume that all scopes are static. Consider function \texttt{pltIsAwesome} only; don't worry about functions \texttt{main}, \texttt{foo}, or \texttt{bar}.
+        \item \textbf{(10 Points)} For each scope that you identified in part (a) for function \texttt{pltIsAwesome}, construct its symbol table. Each table must be titled, ``Scope \textit{X}'' (where \textit{X} is the scope label you created in part (a)), and have the following four columns: \textit{Name}, \textit{Kind}, \textit{Type}, and \textit{Line Number}; make sure to identify all of these attributes for each identifier you add to the symbol table. Note that the identifier \textit{Kind} will be either ``parameter'' or ``variable'' for this part. Further, you do not need to worry about global identifiers (global variables and function names) when constructing your symbol table, but you do need to consider function parameters. We have already created the global symbol table for you in Table \ref{gst}. Finally, assume that all scopes are static. \textit{Hint: only include variables defined in a scope as part of the symbol table for that scope.}
+        
+        \begin{table}[t]
+            \caption{Global Symbol Table for Problem 1}
+            \label{gst}
+            \centering
+            \begin{tabular}{|c|c|c|c|}
+                \toprule
+                \textit{Name} & \textit{Kind} & \textit{Type} & \textit{Line Number}\\
+                \midrule
+                \texttt{x} & variable & \texttt{int} & 3\\
+                \texttt{r} & variable & \texttt{int} & 3\\
+                \texttt{foo} & function & \texttt{float} \rightarrow \texttt{int} & 5\\
+                \texttt{bar} & function & \texttt{float, float} \rightarrow \texttt{int} & 9\\
+                \texttt{pltIsAwesome} & function & \texttt{int} \rightarrow \texttt{int} & 13\\
+                \texttt{main} & function & \texttt{void} \rightarrow \texttt{int} & 34\\
+                \bottomrule
+        \end{tabular}
+        \end{table}
+        
+        \item \textbf{(3 Points)} Which definition of variable \texttt{r} does the one referenced at line 26 correspond to? Explain how you can use the symbol tables you constructed in part (b), as well as the global symbol table we have provided, to help you identify this definition.
+        \item \textbf{(5 Points)} Suppose we are still considering only function \texttt{pltIsAwesome} and are currently at line 19 in the code snippet (we have not scanned the rest of the function yet). Which identifiers (parameters and variables, including global variables if applicable) are \textit{active} at the point of the program immediately after \underline{line 19} is scanned? Active identifiers are those that are currently being referenced at a particular point of the program. List the active identifiers as tuples of the form ``(\textit{Name}, \textit{Kind}, \textit{Type}, \textit{Line Number}).'' You do not need to explain the identifiers you selected.
+        \item \textbf{(5 Points)} Suppose we are instead at line 26. Which identifiers are \textit{active} at the point of the program immediately after \underline{line 26} is scanned? List the active identifiers just as in part (d).
+        \item \textbf{(5 Points)} Now, consider all functions in the code snippet. Assuming that the entire code snippet is still \underline{\textit{statically scoped}}, what is the value printed at line 35 after executing \texttt{main}? Briefly explain your answer in one or two sentences.
+        \item \textbf{(5 Points)} Once more, consider all functions in the code snippet. Now, assume that the entire code snippet is \underline{\textit{dynamically scoped}}. What is the value printed at line 35 after executing \texttt{main}? Briefly explain your answer in one or two sentences.
+    \end{enumerate}
+    \pagebreak
+    
+    \item \textbf{(15 Points)} Suppose you are given the following C code snippet:
+\begin{lstlisting}
+Class PLT {
+
+        int foo(int w) {
+            if(w < 2)
+                return hello(w, w + 1) + 3;
+            return bar(w - 2);
+        }
+        
+        int bar(int x) {
+            return foo(x) * foo(x - 1);
+        }
+        
+        int hello(int y, int z) {
+            return y * z;
+        }
+        
+        int main() {
+            bar(val);
+            return 0;
+        }
+}
+
+\end{lstlisting}
+
+    \begin{enumerate}
+        \item \textbf{(5 Points)} Draw the activation tree generated by executing \texttt{main} when \texttt{val} is 3.
+        \item \textbf{(10 Points)} Using a runtime stack, show the activation records generated by executing \texttt{main} when \texttt{val} is 1. You only need to include the old frame pointer, return address, returned value, and function argument(s); don't worry about temporary variables. You can expand the stack in either direction, as long as you are clear about the direction of expansion in your answer.
+    \end{enumerate}
+    \pagebreak
+    
+    \item \textbf{(27 Points)} Suppose you are performing control flow analysis on the following code snippet:
+    
+\begin{lstlisting}
+        entry
+        w := 2
+        x := 3 - w
+L1:     y := x + y
+        if w < y goto L2
+        x := x - w
+        z := w * x
+        if z > 3 goto L3
+        else goto L1
+L2:     w := x * y
+        y := z - x
+        if y < 5 goto L3
+        else goto L2
+L3:     w := x * 2
+        x := w + z
+        return
+\end{lstlisting}
+    
+    \begin{enumerate}
+        \item \textbf{(4 Points)} List the basic blocks generated from the code snippet, \textit{using as few basic blocks as possible}. The basic blocks should be represented as a sequence of line numbers surrounded by curly braces. For example, if lines 20-24 form a basic block, then you should include \{20, 21, 22, 23, 24\} in your response. Similarly, if only line 36 forms a basic block, then you should include \{36\} in your response.
+        \item \textbf{(8 Points)} Suppose instead that we treat each statement/instruction in the code as a separate node (\textit{e.g.}, \texttt{w := 2} at line 2 and \texttt{x := 3 - w} at line 3 are part of separate nodes). Given these newly-created nodes, draw the control flow graph (CFG\footnote{Not to be confused with the acronym for a context-free grammar, which is also CFG.}) for this code snippet. Note once more that each node in the CFG should represent exactly one statement/instruction in the code snippet. Make sure to also label your nodes, as you will need to reference them for the next few parts. You can assume that the \texttt{return} block is the exit block. \textit{Hint: don't forget to handle the ``else'' statements appropriately.}
+        \item \textbf{(6 Points)} In a CFG, a node \texttt{x} \textit{dominates} node \texttt{y} if all paths from the entry node to node \texttt{y} include node \texttt{x}. Node \texttt{x} is also referred to as the \textit{dominator} of node \texttt{y}. List the \textit{dominator sets} for each node \texttt{y} in your CFG from part (b), where a dominator set is the set of nodes that dominate node \texttt{y}. A dominator set should be represented as a set of node labels (which you added in part (b)) surrounded by curly braces. For example, if nodes \texttt{r}, \texttt{t}, and \texttt{x} dominate node \texttt{y}, then you should include ``\texttt{y}: \{\texttt{r}, \texttt{t}, \texttt{x}\}'' in your response.
+        \item \textbf{(5 Points)} In a CFG, a node \texttt{x} \textit{strictly dominates} node \texttt{y} if all paths from the entry node to node \texttt{y} include node \texttt{x}, and \texttt{x} $\neq$ \texttt{y}. We define the \textit{dominance frontier} of a node \texttt{x} as the set of all nodes \texttt{y} in the CFG such that node \texttt{x} dominates an immediate predecessor of node \texttt{y}, but node \texttt{x} does not strictly dominate node \texttt{y}. In other words, the dominance of node \texttt{x} is said to be terminated at its dominance frontier. Given your CFG from part (b), is there any node that has a non-empty dominance frontier? If there is, provide \underline{one example} of such a node in your CFG by referencing its label, and identify its dominance frontier. The dominance frontier should be represented as a set of node labels surrounded by curly braces. For example, if nodes \texttt{r}, \texttt{t}, and \texttt{x} comprise the dominance frontier of node \texttt{y}, then you should include ``\texttt{y}: \{\texttt{r}, \texttt{t}, \texttt{x}\}'' in your response. If there is no such node, explain why all nodes have an empty dominance frontier.
+        \item \textbf{(2 Points)} In a CFG, a \textit{back edge} is an edge such that the target node dominates the source node. List all back edges in your CFG from part (b). Back edges should be represented as ``\texttt{y} $\rightarrow$ \texttt{x},'' where \texttt{y} represents the label of the source node, and \texttt{x} represents the label of the target node. 
+        \item \textbf{(2 Points)} Is the CFG from part (b) reducible? Briefly explain why or why not.
+    \end{enumerate}
+    \pagebreak
+    
+    \item \textbf{(8 Points)} Rachel has a stack machine with an accumulator. She wants to know if it is possible to compute the expression $E = (12 - 3) * (8 + 2)$. Demonstrate to Rachel that it is possible to use the accumulator to compute $E$ by drawing a table that shows the steps of the evaluation, including the contents of the stack and the accumulator. Your table should contain the following columns: \textit{Step}, \textit{Accumulator}, and \textit{Stack}. For \textit{Step}, you can only use \texttt{acc} $\leftarrow$ \texttt{int} (\texttt{acc} represents the accumulator, and \texttt{int} represents an integer), \texttt{push} (pushes a node from \texttt{acc} to the top of the stack), \texttt{pop} (pops off a node from the top of the stack), \texttt{top} (represents the top of the stack), and the mathematical operators ($+$, $-$, and $*$) in the expression.
+    
+    For example, suppose you were computing the expression $F = 2 * 3$. You would then create a table similar to Table \ref{sm}.
+    
+    \begin{table}[t]
+        \caption{Stack Machine Example for Problem 4}
+        \label{sm}
+        \centering
+        \begin{tabular}{|c|c|c|}
+            \toprule
+            \textit{Step} & \textit{Accumulator} & \textit{Stack}\\
+            \midrule
+            \texttt{acc} $\leftarrow$ 2 & 2 & \texttt{<init>}\\
+            \texttt{push} & 2 & \texttt{2, <init>}\\
+            \texttt{acc} $\leftarrow$ 3 & 3 & \texttt{2, <init>}\\
+            \texttt{acc} $\leftarrow$ \texttt{acc} $*$ \texttt{top} & 6 & \texttt{2, <init>}\\
+            \texttt{pop} & 6 & \texttt{<init>}\\
+            \bottomrule
+    \end{tabular}
+\end{table}
+    
+\end{enumerate}
+
+\end{document}
