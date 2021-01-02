@@ -1,0 +1,167 @@
+\documentclass{article}[12pt]
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage[bottom=1.0in, top=1.0in, left=1in, right=1in]{geometry}
+
+\title{COMS W4115 Fall 2020: Homework Assignment 2}
+
+\author{Programming Languages and Translators}
+\date{\textbf{Deadline:} Friday, November 6, 2020 by 11:59 PM}
+
+\begin{document}
+
+\maketitle
+
+\section*{Overview}
+
+This homework assignment will test your knowledge of context-free grammars (CFGs) and parsing, which you have learned in class. Please submit your assignment via Gradescope by the deadline. This is an \textit{individual} assignment, and all answers must be \textit{typed}. However, you are allowed to hand-draw any parse trees and scan and attach them in your final submission. Finally, you must adhere to the academic integrity policies of the course. In all context-free grammars, assume that $S$ is the start state unless otherwise specified.\\\\\textbf{Total Points:} 85\\\textbf{Number of Problems:} 5
+
+\section*{Problems}
+
+\begin{enumerate}
+    \item \textbf{(8 Points)} For each of the following context-free grammars, state the number of valid inputs supported by that grammar. As an example, the grammar $G: E \rightarrow a~|~b~|~c$ results in 3 valid inputs---$a$, $b$, and $c$. Note that the empty string may be a valid input wherever applicable (this means that if an empty string is a possible input, you should consider it as part of your total count). You also do not need to list the different possible inputs.
+    \begin{enumerate}
+        \item \textbf{(4 Points)}
+            \begin{center}
+                $S \rightarrow A$\\
+                $A \rightarrow BBBwx$\\
+                $B \rightarrow CCCyz$\\
+                $C \rightarrow a~|~b$\\
+            \end{center}
+        \item \textbf{(4 Points)}
+            \begin{center}
+                $S \rightarrow D$\\
+                $D \rightarrow EEE$\\
+                $E \rightarrow FFF$\\
+                $F \rightarrow c~|~d~|~\epsilon$\\
+            \end{center}
+    \end{enumerate}
+
+    \pagebreak
+    \item \textbf{(8 Points)} Suppose there is a context-free grammar $G$ such that the language of $G$, $L(G)$, supports palindrome inputs, where inputs consist of characters from the alphabet $\Sigma = \{a, c, e, r\}$.\\
+    
+    Examples of valid inputs for $L$:
+    \begin{itemize}
+        \item $racecar$
+        \item $a$
+        \item The empty string
+    \end{itemize}
+
+    Examples of invalid inputs for $L$:
+    \begin{itemize}
+        \item $race$ (not a palindrome)
+        \item $abcba$ ($b \notin \Sigma$)
+        \item $ack$ (composite of the first two cases)
+    \end{itemize}
+
+    \begin{enumerate}
+        \item \textbf{(6 Points)} Construct $G$.
+        \item \textbf{(2 Points)} Is $L$ a regular language? Explain why or why not.
+    \end{enumerate}
+    
+    \pagebreak
+    \item \textbf{(18 Points)} \textit{Recursive descent} is a parsing technique that generates a parse tree using a top-down approach. The technique takes advantage of backtracking when there is a mismatch between a token and a production rule. However, recursive descent is not free of its limitations.\\
+    
+    For each of the following context-free grammars, identify whether it is possible to apply recursive descent parsing on all possible inputs.
+    \begin{itemize}
+        \item If it is possible, clearly explain why it is possible (you do not need to provide a formal proof). Further, provide two non-trivial examples (\textit{e.g.}, not the empty string) of valid inputs for the given CFG.
+        \item If it is not possible, clearly explain why it is not possible and provide an example of an input that would not be properly parsed by the given CFG using recursive descent. Finally, rewrite the production rules of the CFG (except for $S \rightarrow E$; leave it as is), using as few production rules as possible, such that recursive descent can be applied.
+    \end{itemize}
+    \begin{enumerate}
+        \item \textbf{(6 Points)}
+        \begin{center}
+            $S \rightarrow E$\\
+            $E \rightarrow XR~|~\epsilon$\\
+            $X \rightarrow \epsilon~|~X~$\\
+            $R \rightarrow \mathrm{int} * E~|~\epsilon$
+        \end{center}
+
+        \item \textbf{(6 Points)}\\
+        \begin{center}
+            $S \rightarrow E$\\
+            $E \rightarrow AB~|~\epsilon$\\
+            $A \rightarrow ( A )~|~\mathrm{int}~| ~+E$\\
+            $B \rightarrow \mathrm{int}~B~| * B~| * |~\mathrm{int}$
+        \end{center}
+
+        \item \textbf{(6 Points)}
+        \begin{center}
+            $S \rightarrow E$\\
+            $E \rightarrow WXY$\\
+            $W \rightarrow a~|~Yb~$\\
+            $X \rightarrow ( W )~|~Z * Z$\\
+            $Y \rightarrow \epsilon~|~E + X$\\
+            $Z \rightarrow \mathrm{int}~Z~|~\mathrm{int}~| + |~\epsilon$
+        \end{center}
+    \end{enumerate}
+
+    \pagebreak
+    \item \textbf{(26 Points)} Consider a context-free grammar $G$ given by the following set of production rules:
+    \begin{center}
+        $S \rightarrow X$\\
+        $X \rightarrow X * X~|~X + X~|~( X )~|~\mathrm{int}$
+    \end{center}
+    Further, suppose we have an input stream of tokens given by $S = 8 * 2 + ( 10 * 4 ) + 9$.
+    \begin{enumerate}
+        \item \textbf{(10 Points)} Using the CFG $G$, construct two parse trees for $S$.
+        \item \textbf{(4 Points)} Let $C$ be the number of unique parse trees that can be generated for $S$, given $G$. Find $C$.
+        \item \textbf{(12 Points)} A CFG is considered \textit{ambiguous} if there is more than one left-most derivation tree or more than one right-most derivation tree.\\
+        
+        Is $G$ an ambiguous grammar? If it is not ambiguous, please explain why not. If it is ambiguous, explain how you would resolve this ambiguity, and rewrite the production rules of $G$ (except for $S \rightarrow X$; leave it as is), using as few production rules as possible, such that $G$ becomes unambiguous.
+    \end{enumerate}
+    
+    \pagebreak
+    \item \textbf{(25 Points)} Consider a simple markup language $L$ that uses tags (similar to those in HTML and XML). To create tags, $L$ supports the following tokens as terminal states: $\{<, >, /, =, word\}$.\\
+
+    The following list provides the criteria for this language:
+
+    \begin{itemize}
+        \item Every tag begins with $<$ and ends with $>$.
+        \item A tag may be an opening tag or a closing tag.
+        \item Inside an opening tag, the first token that follows  $<$ is a word ($word$) representing the name of the tag. The tag also contains an optional list of \textit{attributes}, which are pairs of words connected by $=$ (\textit{i.e.}, $word=word$).
+        \item In a closing tag, the first token that follows $<$ is $/$, followed by the name of the tag (again, $word$). There are no attributes in the closing tag.
+        \item Every opening tag must be paired with a matching closing tag.
+        \item Any number of words or tags may appear between an opening tag and a closing tag.
+    \end{itemize}
+    
+    Examples of valid inputs for $L$:
+    \begin{itemize}
+        \item $<word></word>$
+        \item $<word>word</word>$
+        \item $<word><word~word=word>word~word~word</word></word>$
+        \item $<word~word=word~word=word></word>$
+        \item $<word>word~word<word~word=word></word></word>$
+        \item $<word>word<word~word=word>word</word>word</word>$
+    \end{itemize}
+    Examples of invalid inputs for $L$:
+    \begin{itemize}
+        \item $<></>$ (no presence of $word$ following $<$ in the opening tag and following $/$ in the closing tag)
+        \item $<word>$ (no matching closing tag)
+        \item $<word~word=></word>$ (incomplete attribute)
+        \item $<word></word~word=word>$ (closing tag contains attributes)
+    \end{itemize}
+    
+    This problem has several edge cases, so to simplify the problem, we have these additional assumptions:
+    \begin{itemize}
+        \item Every tag must either be an opening tag or a closing tag; there are no other possibilities.
+        \item Assume that there always exists a space between two words; therefore, $wordword$ is equivalent to $word~word$. You do not have to worry about spaces.
+        \item Include $\$$, the character to indicate the end of the token stream, in your answers wherever applicable.
+        \item $word$ is a single terminal, just like $int$; treat it as one token, not four individual character tokens.
+        \item There can be words outside of a set of opening and closing tags, as long as this set of tags is nested within a set of outer tags encapsulating the words (see valid examples 5 and 6 above).
+        \item It is valid to have an ambiguous grammar, as long as it is correct.
+        \item You do not have to worry about whether the opening and closing tags are the same.
+        \item Only consider the criteria explicitly defined in this problem; do not make assumptions related to real markup languages.
+    \end{itemize}
+    \begin{enumerate}
+        \item \textbf{(5 Points)} Construct a context-free grammar $G$ for the language $L$.
+        \item \textbf{(8 Points)} Write the $FIRST$ and $FOLLOW$ sets for $G$.
+        \item \textbf{(10 Points)} Show the $LL(1)$ parsing table for $G$.
+        \item \textbf{(2 Points)} Is $G$ an $LL(1)$ grammar? Explain why or why not.
+    \end{enumerate}
+
+\end{enumerate}
+
+\end{document}

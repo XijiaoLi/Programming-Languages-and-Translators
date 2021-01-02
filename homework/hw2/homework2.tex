@@ -1,0 +1,285 @@
+\documentclass{article}
+\title{COMS W4115
+	Assignment 2}
+\author{Programming Languages and Translators\medskip\\
+	Xijiao Li (xl2950)}
+\usepackage{listings}
+\usepackage{amsmath}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{setspace}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{dirtytalk}
+\usepackage{tikz}
+\usepackage{forest}
+\usetikzlibrary{automata, positioning}
+
+\renewcommand{\baselinestretch}{1.1} 
+
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+\def\code#1{\texttt{#1}}
+
+
+\lstset{
+	%language=Python,
+	aboveskip=3mm,
+	belowskip=3mm,
+	showstringspaces=false,
+	columns=flexible,
+	basicstyle={\small\ttfamily},
+	numbers=none,
+	numberstyle=\tiny\color{gray},
+	commentstyle=\color{dkgreen},
+	stringstyle=\color{mauve},
+	breaklines=true,
+	breakatwhitespace=true,
+	tabsize=3,
+	mathescape
+}
+
+\begin{document}
+	
+	\pagenumbering{gobble}
+	\maketitle
+	
+	\newpage
+	\pagenumbering{arabic}
+	\subsection*{Problem 1}
+	\subsubsection*{a.}
+	\begin{align*}
+		\text{Given }\  S &\to A \\
+		A &\to  BBBwx \\
+		B &\to  CCCyz \\
+		C &\to a|b \\
+		\text{then }\ S &\to A \to  BBBwx \to  {CCCyz}\{3\}wx \to \big((a|b)\{3\}yz\big)\{3\}wx
+	\end{align*}
+	So the total number is $2^9 = 512$.
+	
+	\subsubsection*{b.}
+	\begin{align*}
+		\text{Given }\  S&\to D\\
+		D &\to  EEE \\
+		E&\to FFF \\
+		F&\to c|d|\epsilon \\
+		\text{then }\ S &\to D \to  EEE \to  (FFF)\{3\} \to \big((c|d|\epsilon)\{3\}\big)\{3\} \to  (c|d|\epsilon)\{9\}
+	\end{align*}
+	So the total number is $\sum_{i=0}^{10} 2^i  = 1023$.
+	
+	\newpage
+	\subsection*{Problem 2}
+	\subsubsection*{a.}
+	The context-free grammar $G$ is given by the following set of production rules:
+	\begin{align*}
+		S &\rightarrow \ aSa \ |\ cSc \ |\ eSe \ |\ rSr \ | \ a \ |\ c \ |\ e \ |\ r\ | \ \epsilon 
+	\end{align*}
+	\subsubsection*{b.}
+	Proof by contradiction.\\
+	Suppose that $G$ is regular. Let $p$ be the pumping value from the pumping lemma. Consider the input string $s = a^pcca^p$, which is a palindrome and $|s|\ge p$. By the pumping lemma, there must exist strings $x, y$, and $z$ satisfying the four constraints of the pumping lemma.
+	
+	So, pick any $x, y, z$ such that $s = xyz,\ |xy| \le p$, and $|y| \ge 1$. Because $|xy| \le n,\ xy$ is entirely wrapped in the $a^p$ at the start of $s$. So $x$ and $y$ consist entirely of $a$'s, i.e. $x = a^i,\  y = a^j$. Then $z = a^kcca^p$, where $i + j + k = p$.
+	
+	Now, by the pumping lemma, $xz= a^ia^k11a^p = a^{i+k}cca^p$ must be in the language. Since $|y| \ge 1, j \ge 1$, so $i + k < p$, meaning that $xz$ is not a palindrome (because the numbers of zeros on the two ends don't match). Therefore there is a contradiction that the set of palindromes doesn't satisfy the pumping lemma, and thus, $G$  is not regular.
+	
+	\newpage
+	\subsection*{Problem 3}
+	Given that here we are referring to General Recursive Descent (i.e., backtracking is supported), as long as the grammar is not left recursive, it is possible to apply recursive descent parsing on all possible inputs. A grammar is left recursive if contains some left recursive nonterminal.  A nonterminal is left-recursive if the leftmost symbol in one of its productions is itself (in the case of direct left recursion) or can be made itself by some sequence of substitutions (in the case of indirect left recursion).
+	\subsubsection*{a.}
+	\begin{align*}
+		\text{Given }\  
+		S &\to E &\text{not left recursion} \\
+		E &\to XR\ |\ \epsilon &\text{not left recursion} \\
+		X &\to \epsilon\ |\ X &\text{left recursion}\\
+		R &\to int * E\ |\ \epsilon &\text{not left recursion}
+	\end{align*}
+	No, since there is a left recursion: $X \to X$.\smallskip \\
+	Examples: $5*5*$ cannot be parsed using Recursive descent. \smallskip\\
+	New grammar $G'$:
+	\begin{align*}
+		S &\to R \\
+		R &\to int * R\ |\ \epsilon 
+	\end{align*}
+	
+	\subsubsection*{b.}
+	\begin{align*}
+		\text{Given }\  
+		S &\rightarrow E &\text{not left recursion} \\
+		E &\rightarrow AB~|~\epsilon &\text{not left recursion} \\
+		A &\rightarrow ( A )~|~\mathrm{int}~| ~+E &\text{not left recursion} \\
+		B &\rightarrow \mathrm{int}~B~| * B~| * |~\mathrm{int} &\text{not left recursion} 
+	\end{align*}
+	Yes, since there is no left recursion: we will always consume the first character of input and then continue the parsing.\smallskip\\
+	Examples:
+	\begin{itemize}[topsep=2pt,itemsep=3pt,parsep=0pt,partopsep=0pt]
+		\item $(5)*5$
+		\item $5*5$
+	\end{itemize}
+	
+	\subsubsection*{c.}
+	\begin{align*}
+		\text{Given }\  
+		S &\rightarrow E &\ &\text{not left recursion} \\
+		E &\rightarrow WXY &\ &\text{part of left recursion} \\
+		W &\rightarrow a~|~Yb~ &\ &\text{part of left recursion} \\
+		X &\rightarrow ( W )~|~Z * Z &\ &\text{not left recursion} \\
+		Y &\rightarrow \epsilon~|~E + X &\ &\text{part of left recursion} \\
+		Z &\rightarrow \mathrm{int}~Z~|~\mathrm{int}~| + |~\epsilon &\ &\text{not left recursion} 
+	\end{align*}
+	No, since the grammar is left recursive. Given productions
+	\begin{align*}
+		E &\rightarrow WXY \\
+		W &\rightarrow a~|~Yb~ \\
+		Y &\rightarrow \epsilon~|~E + X 
+	\end{align*}
+	we have a left recursive nonterminal $E \rightarrow${\tiny $^+$} $E+XbXY  $.\smallskip\\
+	Examples: $b(a)$ cannot be parsed using recursive descent. \smallskip\\
+	New grammar $G'$:
+	\begin{align*}
+		S &\rightarrow E \\
+		E &\rightarrow WXY \\
+		W &\rightarrow bY \\
+		X &\rightarrow ( W )~|~Z * Z \\
+		Y &\rightarrow \epsilon~|~E + X ~|~aY~ \\
+		Z &\rightarrow \mathrm{int}~Z~|~\mathrm{int}~| + |~\epsilon \\
+	\end{align*}
+	
+	\newpage
+	\subsection*{Problem 4}
+	\subsubsection*{a.}
+	First tree:\\
+	\begin{forest}
+		[$S$, for tree={parent anchor=south, child anchor=north}
+			[$X$
+				[$X$
+					[$X$[int<8>]]
+					[$*$]
+					[$X$[int<2>]]
+				]
+				[$+$]
+				[$X$
+					[$X$
+						[$\left( \right.$]
+						[$X$
+							[$X$[int<10>]]
+							[$*$]
+							[$X$[int<4>]]	
+						]
+						[$\left. \right) $]
+					]
+					[$+$]
+					[$X$[int<9>]]
+				]
+			]
+		]
+	\end{forest}\\
+	Second tree:\\
+	\begin{forest}
+		[$S$, for tree={parent anchor=south, child anchor=north}
+			[$X$
+				[$X$
+					[$X$
+						[$X$[int<8>]]
+						[$*$]
+						[$X$[int<2>]]
+					]
+					[$+$]
+					[$X$
+						[$\left( \right.$]
+						[$X$
+						[$X$[int<10>]]
+						[$*$]
+						[$X$[int<4>]]	
+						]
+						[$\left. \right) $]
+						]
+					]
+				]
+				[$+$]
+				[$X$[int<9>]]
+			]
+		]	
+	\end{forest}
+	
+	\subsubsection*{b.}
+	5 unique parse trees:\\
+	$8 * \{ 2 + [(10*4) + 9 ]\}$\\
+	$8 * \{ [ 2 + (10*4) ] + 9\}$\\
+	$\{8 * [ 2 + (10*4) ] \} + 9$\\
+	$\{[ 8*2 ] + (10*4)\} + 9$\\
+	$[8*2]+ [(10*4) + 9]$
+	
+	\subsubsection*{c.}
+	Yes, $G$ is ambiguous. To resolve the ambiguity, we can add some implicit mathematics rules when writing the productions:
+	\begin{align*}
+		S &\rightarrow X\\
+		X &\rightarrow X + Y~ | ~Y &\ &\text{{\small addtion is left associative, and has the lowest priority}} \\
+		Y &\rightarrow Y_{\ }*~Z_{\ } | ~Z &\ &\text{{\small multiplication is left associative, and has the second priority}} \\
+		Z &\rightarrow ( X )~|~\mathrm{int} &\ &\text{{\small parentheses (simplify inside 'em) has the highest priority}}
+	\end{align*}
+	
+	\newpage
+	\subsection*{Problem 5}
+	\subsubsection*{a.}
+	The context-free grammar $G$ is given by the following set of production rules:
+	\begin{align*}
+		S &\rightarrow \ <word\ Y>X</word> | \ \epsilon\\
+		X &\rightarrow S \ |\ word\ X \ |\ X\ word \\
+		Y &\rightarrow word = word ~Y~ |~ \epsilon 
+	\end{align*}
+
+	\subsubsection*{b.}
+	The terminals of $G$ are $\{<, >, /, =, word\}$, and the nonterminals of $G$ are $\{S, X, Y\}$.
+	\begin{align*}
+		FIRST(S) &= FIRST( {\scriptstyle <word\ Y>X</word>} ) \cup FIRST(  \epsilon ) \\
+		& = \{<, \epsilon, \$ \}\\
+		FIRST(X) &= FIRST( S ) \cup FIRST({\scriptstyle word\ X}) \cup FIRST( {\scriptstyle X\ word} ) \\
+		&= \{<, \epsilon, word\}\\
+		FIRST(Y) &= FIRST( word = word ~Y  ) \cup FIRST( \epsilon  ) \\
+		&= \{word, \epsilon \} \\
+		FIRST(<) &= \{< \} \\
+		FIRST(>) &= \{> \} \\
+		FIRST(/) &= \{/ \} \\
+		FIRST(=) &= \{= \} \\
+		FIRST(word) &= \{word \} \medskip\\
+		FOLLOW(S) & = \{ \$, word, < \} \\
+		FOLLOW(X) &= \{<, word\}\\
+		FOLLOW(Y) &= \{> \} \\
+		FOLLOW(<) &= \{word, / \} \\
+		FOLLOW(>) &= \{word, <, \$ \} \\
+		FOLLOW(/) &= \{ word \} \\
+		FOLLOW(=) &= \{word \} \\
+		FOLLOW(word) &= \{word, >, = \} 
+	\end{align*}
+
+	\subsubsection*{c.}
+	Label the rules:
+	\begin{align*}
+		&1.\ S \rightarrow \ <word\ Y>X</word> \\
+		&2.\ S \rightarrow \ \epsilon\\
+		&3.\ X \rightarrow \ S\\
+		&4.\ X \rightarrow \ word\ X \\
+		&5.\ X \rightarrow \ X\ word \\
+		&6.\ Y \rightarrow \ word = word ~Y~ \\
+		&7.\ Y \rightarrow \ \epsilon 
+	\end{align*}
+	Parsing table:\\
+	\begin{center}
+		\begin{tabular}{ |c|c|c|c|c|c|c|} 
+			\hline
+			&$<$ & $>$ & $/$ & $=$ & $word$ & \$\\ 
+			\hline
+			$S$ & 1, 2  &  &  & & 2 & 2 \\ 
+			\hline
+			$X$ & 3, 5 &  &  & & 3, 4, 5 & \\ 
+			\hline
+			$Y$ &  & 7 &  & & 6 & \\ 
+			\hline
+		\end{tabular}
+	\end{center}
+	No, the $G$ is not an $LL(1)$ grammar, since the parsing table has multiple entries.
+	
+\end{document}
