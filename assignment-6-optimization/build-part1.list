@@ -1,0 +1,8 @@
+[from ref]
+src/hw6-optimizer-part1.cpp llvm/lib/Transforms/clang-hw6/hw6-optimizer.cpp
+
+
+[to ref]
+build/bin/test-clang-hw6-part1 build-part1/test-clang-hw6
+build/lib/LLVMOptimizer.so build-part1/LLVMOptimizer.so
+build.sh-output.txt

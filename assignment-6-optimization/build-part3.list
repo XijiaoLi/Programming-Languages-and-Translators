@@ -1,0 +1,8 @@
+[from ref]
+src/dead-instruction-analyzer.cpp llvm/lib/Transforms/clang-hw6/dead-instruction-analyzer.cpp
+
+
+[to ref]
+build/bin/test-clang-hw6-part3 build-part3/test-clang-hw6
+build/lib/LLVMOptimizer.so build-part3/LLVMOptimizer.so
+build.sh-output.txt

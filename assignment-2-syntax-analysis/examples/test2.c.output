@@ -1,0 +1,16 @@
+foo - non-recursive
+too - non-recursive
+bar - recursive
+==================================================
+Function call found at line 10
+Original Source
+foo(
+  3,
+       foo (
+ bar( 9   ) ,
+   foo(
+                    5  ,  too (   )    )
+               ))
+Formatted Source
+foo (3, foo (bar (9), foo (5, too ())))
+==================================================

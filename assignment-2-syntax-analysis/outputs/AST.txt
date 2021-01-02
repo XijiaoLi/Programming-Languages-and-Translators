@@ -1,0 +1,16 @@
+What information is being presented in the output:
+Clang converts gcd.c into an abstract syntax tree (AST), and we obtain a text representation of that AST.
+The AST has a tree structure, with many nodes and edges between nodes.
+We get:
+1. type of the node (e.g., FunctionDecl).
+2. address of the node (e.g., 0x560afbb34aa0)
+3. location of the node in the code file (e.g., <line:3:5, line:11:5>)
+4. node value and value type (e.g., k4 'int')
+5. other details about the node (e.g., used)
+
+What you find interesting about the output:
+1. the output AST also includes some internal declarations of clang at the top level.
+2. there is only one "FunctionDecl" node, corresponding to the only function declaration gcd_recursive in gcd.c.
+3. function parameter declarations has the same level as function body, which goes into one instance of CompoundStmt.
+4. all nodes appears only once in the ASY tree.
+5. different kinds of nodes have different number of childern.

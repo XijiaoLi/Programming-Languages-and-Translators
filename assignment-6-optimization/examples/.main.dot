@@ -1,0 +1,17 @@
+digraph "CFG for 'main' function" {
+	label="CFG for 'main' function";
+
+	Node0xadb7fa0 [shape=record,color="#b70d28ff", style=filled, fillcolor="#b70d2870",label="{entry:\l  %cmp = icmp eq i32 0, 0\l  br i1 %cmp, label %if.then, label %if.end\l|{<s0>T|<s1>F}}"];
+	Node0xadb7fa0:s0 -> Node0xadb8250;
+	Node0xadb7fa0:s1 -> Node0xadb82a0;
+	Node0xadb8250 [shape=record,color="#3d50c3ff", style=filled, fillcolor="#f7b39670",label="{if.then:                                          \l  %add = add nsw i32 0, 1\l  br label %if.end\l}"];
+	Node0xadb8250 -> Node0xadb82a0;
+	Node0xadb82a0 [shape=record,color="#b70d28ff", style=filled, fillcolor="#b70d2870",label="{if.end:                                           \l  %c.0 = phi i32 [ %add, %if.then ], [ 0, %entry ]\l  %mul = mul nsw i32 1, 2\l  %add1 = add nsw i32 2, %c.0\l  %cmp2 = icmp eq i32 %c.0, 0\l  br i1 %cmp2, label %if.then3, label %if.else\l|{<s0>T|<s1>F}}"];
+	Node0xadb82a0:s0 -> Node0xadb82f0;
+	Node0xadb82a0:s1 -> Node0xadb8340;
+	Node0xadb82f0 [shape=record,color="#3d50c3ff", style=filled, fillcolor="#f7b39670",label="{if.then3:                                         \l  %add4 = add nsw i32 %c.0, 1\l  br label %return\l}"];
+	Node0xadb82f0 -> Node0xadb8390;
+	Node0xadb8340 [shape=record,color="#b70d28ff", style=filled, fillcolor="#e8765c70",label="{if.else:                                          \l  %add5 = add nsw i32 %c.0, 2\l  br label %return\l}"];
+	Node0xadb8340 -> Node0xadb8390;
+	Node0xadb8390 [shape=record,color="#b70d28ff", style=filled, fillcolor="#b70d2870",label="{return:                                           \l  %retval.0 = phi i32 [ %add4, %if.then3 ], [ %add5, %if.else ]\l  ret i32 %retval.0\l}"];
+}

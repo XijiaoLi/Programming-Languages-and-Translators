@@ -1,0 +1,9 @@
+gcd_recursive - recursive
+Redefining variable : "k4" at line 8 which is initially defined at line 2
+==================================================
+Function call found at line 5
+Original Source
+gcd_recursive(n2,r)
+Formatted Source
+gcd_recursive (n2, r)
+==================================================
